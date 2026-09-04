@@ -1,0 +1,93 @@
+{
+  "version": 1,
+  "objects": {
+    "app:audit": {
+      "guid": "cad4174a6426a42a1e453b38ee821110",
+      "canonical": "lorb_audit",
+      "canonical_source": "code"
+    },
+    "app:auth": {
+      "guid": "4fe67f5a2d319eaaca7996700f27edd8",
+      "canonical": "lorb_auth",
+      "canonical_source": "code"
+    },
+    "app:boards": {
+      "guid": "00b8d698e79c59d676e7902044755a19",
+      "canonical": "lorb_boards",
+      "canonical_source": "code"
+    },
+    "app:ops": {
+      "guid": "e3319f6eef10d315d17fdbf36db140d1",
+      "canonical": "lorb_ops",
+      "canonical_source": "code"
+    },
+    "app:seed": {
+      "guid": "7110fabc369b25f0581044e47d499906",
+      "canonical": "lorb_seed",
+      "canonical_source": "code"
+    },
+    "dbo:approval": {
+      "guid": "f139daa26901db948305de7008aca3b0"
+    },
+    "dbo:audit_log": {
+      "guid": "1b71dcef19b2eeb1855a87ace88ef1a0"
+    },
+    "dbo:entry": {
+      "guid": "172343a2f694c045dd0b26f7db0c7b75"
+    },
+    "dbo:leaderboard": {
+      "guid": "01ee40596bd080dbaf77cd96db8329b9"
+    },
+    "dbo:operator": {
+      "guid": "5079fc60341629761a3a20f0f9780941"
+    },
+    "dbo:ops_action": {
+      "guid": "08625f8e65c5d0cd2ec30b0cf0f8b530"
+    },
+    "dbo:rule_config": {
+      "guid": "2a68c2a0f37ba682124f188f71b21171"
+    },
+    "function:resolve_rule": {
+      "guid": "034d3be45dd320b39a7ba0ead27a3c60"
+    },
+    "function:role_rank": {
+      "guid": "9b1eea4d441ebf0a89eb60cdb55504eb"
+    },
+    "function:write_audit": {
+      "guid": "d91a848df35dfe318fbfbc5cdac0f5a8"
+    },
+    "query:audit|GET|audit_query": {
+      "guid": "52b4e140524c349ee01b499ec4b33fe7"
+    },
+    "query:auth|GET|me": {
+      "guid": "bfd70d24f92356209c72088852ec320e"
+    },
+    "query:auth|POST|login": {
+      "guid": "d39d74f907baeb484e9c93358362998a"
+    },
+    "query:boards|GET|entries_list": {
+      "guid": "2c12f430b3e677e69c51fa2811afe9ed"
+    },
+    "query:boards|GET|leaderboards_list": {
+      "guid": "aac031c14d1e1dcf5d988f3fd9b9232d"
+    },
+    "query:ops|GET|action_detail/{ops_action_id}": {
+      "guid": "ddf04c4305ef7b1344195c042c791bfb"
+    },
+    "query:ops|GET|actions_queue": {
+      "guid": "ab534438559ff8bbfad36dc6c0712ac5"
+    },
+    "query:ops|POST|action_approve": {
+      "guid": "d7783bf4a61c81fe85ab7560d4746b29"
+    },
+    "query:ops|POST|action_execute": {
+      "guid": "d5f1071d4eb508fcbb2f9ab65e949cf9"
+    },
+    "query:ops|POST|action_request": {
+      "guid": "387dfd5165cd90f9cfbadce636ef2d2c"
+    },
+    "query:seed|POST|seed_run": {
+      "guid": "6739b6cf245ec24294010d486882f867"
+    }
+  }
+}

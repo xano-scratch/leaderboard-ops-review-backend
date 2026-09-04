@@ -1,0 +1,206 @@
+<!doctype html>
+<html lang="en" class="dark">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Leaderboard Ops Review Backend — a governed Xano API layer</title>
+    <meta
+      name="description"
+      content="The governed backend under an AI-built game-studio ops tool: role-routed actions, a distinct second approver for sensitive ones, and an append-only audit trail, all in one Xano API layer."
+    />
+    <style>
+      :root {
+        --bg: #0a0a0b;
+        --panel: #141416;
+        --panel-2: #1b1b1f;
+        --border: #2a2a30;
+        --text: #ededed;
+        --muted: #a1a1aa;
+        --primary: #a78bfa;
+        --primary-ink: #1a1024;
+        --amber: #fbbf24;
+        --emerald: #6ee7b7;
+        --rose: #fda4af;
+        --sky: #7dd3fc;
+      }
+      * { box-sizing: border-box; }
+      body {
+        margin: 0;
+        background: radial-gradient(1200px 600px at 50% -10%, #17131f 0%, var(--bg) 60%);
+        color: var(--text);
+        font: 16px/1.6 ui-sans-serif, system-ui, -apple-system, Segoe UI, Roboto, Helvetica, Arial, sans-serif;
+        -webkit-font-smoothing: antialiased;
+      }
+      a { color: inherit; }
+      .wrap { max-width: 960px; margin: 0 auto; padding: 0 20px; }
+      .hero { padding: 72px 0 40px; }
+      .eyebrow {
+        display: inline-flex; align-items: center; gap: 8px;
+        font-size: 13px; color: var(--muted);
+        border: 1px solid var(--border); border-radius: 999px;
+        padding: 5px 12px; background: var(--panel);
+      }
+      .dot { width: 8px; height: 8px; border-radius: 999px; background: var(--primary); }
+      h1 { font-size: clamp(30px, 5vw, 46px); line-height: 1.1; margin: 20px 0 8px; letter-spacing: -0.02em; }
+      .tagline { font-size: clamp(17px, 2.4vw, 21px); color: var(--muted); max-width: 760px; margin: 0; }
+      .badges { display: flex; flex-wrap: wrap; gap: 8px; margin: 22px 0 6px; }
+      .badge {
+        font-size: 12.5px; color: var(--muted);
+        border: 1px solid var(--border); border-radius: 8px;
+        padding: 4px 10px; background: var(--panel);
+      }
+      .badge b { color: var(--text); font-weight: 600; }
+      .hero-actions { display: flex; flex-wrap: wrap; gap: 12px; margin-top: 22px; }
+      .btn {
+        display: inline-flex; align-items: center; gap: 8px;
+        font-size: 15px; font-weight: 600; text-decoration: none;
+        border-radius: 10px; padding: 11px 18px; border: 1px solid transparent;
+        transition: transform 0.05s ease, background 0.15s ease;
+      }
+      .btn:active { transform: translateY(1px); }
+      .btn.primary { background: var(--primary); color: var(--primary-ink); }
+      .btn.primary:hover { background: #b9a4fb; }
+      .btn.ghost { background: transparent; color: var(--text); border-color: var(--border); }
+      .btn.ghost:hover { background: var(--panel); }
+      .shot {
+        margin: 40px 0 8px; border: 1px solid var(--border); border-radius: 14px;
+        overflow: hidden; background: var(--panel); box-shadow: 0 24px 60px rgba(0,0,0,0.45);
+      }
+      .shot img { display: block; width: 100%; height: auto; }
+      section { padding: 34px 0; border-top: 1px solid var(--border); }
+      h2 { font-size: 22px; margin: 0 0 16px; letter-spacing: -0.01em; }
+      .grid { display: grid; gap: 14px; grid-template-columns: repeat(2, 1fr); }
+      @media (max-width: 680px) { .grid { grid-template-columns: 1fr; } }
+      .card { border: 1px solid var(--border); border-radius: 12px; padding: 16px 18px; background: var(--panel); }
+      .card h3 { margin: 0 0 6px; font-size: 15.5px; }
+      .card p { margin: 0; color: var(--muted); font-size: 14.5px; }
+      table { width: 100%; border-collapse: collapse; font-size: 14px; }
+      th, td { text-align: left; padding: 10px 12px; border-bottom: 1px solid var(--border); vertical-align: top; }
+      th { color: var(--muted); font-weight: 600; }
+      code, .mono { font-family: ui-monospace, SFMono-Regular, Menlo, Consolas, monospace; font-size: 13px; }
+      td .mono { color: var(--sky); }
+      .steps { list-style: none; counter-reset: s; padding: 0; margin: 0; }
+      .steps li { counter-increment: s; position: relative; padding: 0 0 14px 40px; color: var(--muted); }
+      .steps li::before {
+        content: counter(s); position: absolute; left: 0; top: -2px;
+        width: 26px; height: 26px; border-radius: 999px; background: var(--panel-2);
+        border: 1px solid var(--border); color: var(--text);
+        display: grid; place-items: center; font-size: 13px; font-weight: 600;
+      }
+      .steps b { color: var(--text); }
+      pre {
+        background: var(--panel); border: 1px solid var(--border); border-radius: 12px;
+        padding: 16px 18px; overflow-x: auto; margin: 0 0 8px;
+      }
+      pre code { color: var(--emerald); }
+      .note { color: var(--muted); font-size: 14px; }
+      footer { padding: 30px 0 60px; color: var(--muted); font-size: 13.5px; border-top: 1px solid var(--border); }
+    </style>
+  </head>
+  <body>
+    <div class="wrap">
+      <header class="hero">
+        <span class="eyebrow"><span class="dot"></span> Play 3 · Pilot to Production · Competitive gaming</span>
+        <h1>Leaderboard Ops Review Backend</h1>
+        <p class="tagline">
+          The governed backend under an AI-built game-studio ops tool. Every leaderboard action is
+          role-routed, sensitive ones wait for a distinct second approver, and every attempt lands in an
+          append-only audit trail, all in one Xano API layer the frontend cannot bypass.
+        </p>
+        <div class="badges">
+          <span class="badge"><b>7</b> tables</span>
+          <span class="badge"><b>11</b> APIs</span>
+          <span class="badge"><b>3</b> functions</span>
+          <span class="badge">API-layer RBAC, no RLS</span>
+          <span class="badge">Append-only audit</span>
+        </div>
+        <div class="hero-actions">
+          <a class="btn primary" href="https://github.com/xano-scratch/leaderboard-ops-review-backend">View on GitHub</a>
+          <a class="btn ghost" href="#use">Use this template</a>
+        </div>
+      </header>
+
+      <div class="shot">
+        <img src="screenshot.png" alt="The review queue with a selected wipe action, showing its rule and the per-action audit trail stamped v1." />
+      </div>
+
+      <section>
+        <h2>What it demonstrates</h2>
+        <div class="grid">
+          <div class="card">
+            <h3>API-layer RBAC, never RLS</h3>
+            <p>Access is decided by role checks at the endpoint, on an auth table plus preconditions. Permissions are not modeled in the database rows.</p>
+          </div>
+          <div class="card">
+            <h3>Segregation of duties</h3>
+            <p>A sensitive action needs a second approver who is not the requester. The check runs on the server, so it holds whatever the frontend sends.</p>
+          </div>
+          <div class="card">
+            <h3>A versioned rule set</h3>
+            <p>Which types are sensitive, and the minimum approver role for each, come from one active rule row. Every decision stamps the version it applied.</p>
+          </div>
+          <div class="card">
+            <h3>Append-only audit trail</h3>
+            <p>Requests, guard denials, approvals, and executions are written and never edited, each stamped with the rule version that applied.</p>
+          </div>
+        </div>
+      </section>
+
+      <section>
+        <h2>API surface</h2>
+        <table>
+          <thead>
+            <tr><th>Method and path</th><th>What it enforces</th></tr>
+          </thead>
+          <tbody>
+            <tr><td class="mono">POST /api:lorb_auth/login</td><td>Verifies an operator and mints a token.</td></tr>
+            <tr><td class="mono">GET /api:lorb_auth/me</td><td>The current operator and role.</td></tr>
+            <tr><td class="mono">POST /api:lorb_ops/action_request</td><td>Validates the target, derives sensitivity, writes pending plus an audit row.</td></tr>
+            <tr><td class="mono">GET /api:lorb_ops/actions_queue</td><td>The review queue, operator directory, and active rule version.</td></tr>
+            <tr><td class="mono">GET /api:lorb_ops/action_detail/{id}</td><td>One action with its requester, target, and approvals.</td></tr>
+            <tr><td class="mono">POST /api:lorb_ops/action_approve</td><td>Role guard and the segregation-of-duties guard. A denial is audited first.</td></tr>
+            <tr><td class="mono">POST /api:lorb_ops/action_execute</td><td>Applies the effect only if approved, the role fits, and a distinct approver signed off.</td></tr>
+            <tr><td class="mono">GET /api:lorb_boards/leaderboards_list</td><td>All boards with status and entry count.</td></tr>
+            <tr><td class="mono">GET /api:lorb_boards/entries_list</td><td>Ranked entries for a board, with the cheat flag.</td></tr>
+            <tr><td class="mono">GET /api:lorb_audit/audit_query</td><td>The audit trail, filterable, every row stamped with its rule version.</td></tr>
+            <tr><td class="mono">POST /api:lorb_seed/seed_run</td><td>Idempotent demo seed.</td></tr>
+          </tbody>
+        </table>
+      </section>
+
+      <section>
+        <h2>Frontend screens</h2>
+        <div class="grid">
+          <div class="card"><h3>Login and role banner</h3><p>Sign in as an operator; the header shows your role so the gating reads as real.</p></div>
+          <div class="card"><h3>Leaderboards</h3><p>List boards, open one to see ranked entries with the suspected-cheat marker.</p></div>
+          <div class="card"><h3>Request an action</h3><p>Pick a board or entry, choose a type, submit. Sensitive types say they need a second approver.</p></div>
+          <div class="card"><h3>Review queue</h3><p>Approve or reject; a blocked banner shows when a server guard refuses your decision.</p></div>
+          <div class="card"><h3>Audit trail</h3><p>Every request, denial, approval, and execution, each stamped with the rule version.</p></div>
+        </div>
+      </section>
+
+      <section id="use">
+        <h2>Use this template</h2>
+        <ol class="steps">
+          <li><b>Clone and install.</b> <span class="mono">git clone</span> this repo, then <span class="mono">npm install</span>.</li>
+          <li><b>Authenticate once.</b> <span class="mono">npx xanots login</span> with your Xano account.</li>
+          <li><b>Deploy.</b> <span class="mono">npm run xano:deploy</span> builds the frontend, deploys, and prints the live URL. It self-seeds, so the queue and trail are populated.</li>
+        </ol>
+        <p class="note" style="margin: 12px 0 10px;">Or hand this prompt to your coding agent:</p>
+        <pre><code>Start a new XanoTS app from the template at
+https://github.com/xano-scratch/leaderboard-ops-review-backend
+Clone it, run npm install, then npx xanots login and npm run xano:deploy
+to get it live. Then adapt the tables and endpoints to my domain.</code></pre>
+        <p class="note">
+          Live preview links are ephemeral and expire, so this page does not pin one. Deploy your own clone
+          for fresh links any time.
+        </p>
+      </section>
+
+      <footer>
+        Built with <a href="https://www.npmjs.com/package/@xanots/sdk">XanoTS</a> (<span class="mono">@xanots/sdk</span>).
+        A Xano proof artifact: API-layer governance, not row-level security.
+      </footer>
+    </div>
+  </body>
+</html>
