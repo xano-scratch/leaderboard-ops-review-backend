@@ -19,28 +19,28 @@ function lorb_resolve_rule {
     }
   
     var $min_role {
-      value = "lead"
+      value = "admin"
     }
   
     conditional {
       if ($input.type == "reset_leaderboard") {
         var.update $min_role {
           value = $cfg
-            |get:"min_approver_role.reset_leaderboard":null
+            |get:"min_approver_role.reset_leaderboard":"admin"
         }
       }
     
       elseif ($input.type == "wipe_entry") {
         var.update $min_role {
           value = $cfg
-            |get:"min_approver_role.wipe_entry":null
+            |get:"min_approver_role.wipe_entry":"admin"
         }
       }
     
       elseif ($input.type == "grant_reward") {
         var.update $min_role {
           value = $cfg
-            |get:"min_approver_role.grant_reward":null
+            |get:"min_approver_role.grant_reward":"admin"
         }
       }
     }

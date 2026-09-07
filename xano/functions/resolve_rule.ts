@@ -25,19 +25,24 @@ export const resolveRule = defineFunction({
     }),
     // Sensitive when the type is listed in the active rule set's sensitive_types array.
     s.set_var("is_sensitive", withFilters(inp("type"), fl.in(ref("cfg.sensitive_types")))),
-    // Minimum approver role, read per type from the rule set's mapping.
-    s.set_var("min_role", c.text("lead")),
+    // Minimum approver role, read per type from the rule set's mapping. A
+    // missing per-type entry must FAIL SAFE to the most restrictive role, not
+    // to null: `role_rank(null)` is 0, which makes every role guard pass for
+    // any operator, so a misconfigured rule set would silently let anyone
+    // approve and execute a governed action. Both the base default and each
+    // `get` fall back to "admin" so an incomplete rule set locks down.
+    s.set_var("min_role", c.text("admin")),
     s.conditional({
       when: expr(inp("type"), "=", c.text("reset_leaderboard")),
-      then: [s.update_var("min_role", ref("cfg.min_approver_role.reset_leaderboard", { safe: true }))],
+      then: [s.update_var("min_role", withFilters(ref("cfg"), fl.get("min_approver_role.reset_leaderboard", c.text("admin"))))],
       elif: [
         {
           when: expr(inp("type"), "=", c.text("wipe_entry")),
-          then: [s.update_var("min_role", ref("cfg.min_approver_role.wipe_entry", { safe: true }))],
+          then: [s.update_var("min_role", withFilters(ref("cfg"), fl.get("min_approver_role.wipe_entry", c.text("admin"))))],
         },
         {
           when: expr(inp("type"), "=", c.text("grant_reward")),
-          then: [s.update_var("min_role", ref("cfg.min_approver_role.grant_reward", { safe: true }))],
+          then: [s.update_var("min_role", withFilters(ref("cfg"), fl.get("min_approver_role.grant_reward", c.text("admin"))))],
         },
       ],
     }),
