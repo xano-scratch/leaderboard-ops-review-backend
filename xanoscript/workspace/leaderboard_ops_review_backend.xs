@@ -5,5 +5,6 @@ workspace "leaderboard-ops-review-backend" {
     track_performance: true
     sql_names        : false
     sql_columns      : true
+    test : 123
   }
 }
