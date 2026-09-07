@@ -1,0 +1,38 @@
+name: check
+
+on:
+  push:
+    branches: [main]
+  pull_request:
+
+jobs:
+  check:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '20.19'
+          cache: npm
+
+      # `npm ci`, not `npm install`: package.json allows @xanots/sdk
+      # ">=0.0.21 <0.1.0" while package-lock.json pins 0.0.21. An open install
+      # would re-render xanoscript/ with whatever patch shipped most recently
+      # and fail the check below on a pull request that changed nothing.
+      - run: npm ci
+
+      # This is the real gate. `xanots export --frozen-lock --xanoscript`
+      # typechecks, then exits 1 if the committed xanoscript/ tree is not what
+      # this source renders to, naming the files that would change. Without a
+      # job that runs it, xanoscript/README.md makes a freshness promise that
+      # nothing enforces, and a stale rendering is worse than none because
+      # reviewers read it as authoritative.
+      - name: Typecheck, export, and fail on a stale xanoscript/ tree
+        run: npm run xano:check
+
+      # Backstop only: the step above already covers xanoscript/ staleness.
+      # This catches anything else the export writes into the working tree,
+      # xano/xano.lock included.
+      - name: Working tree must be clean after the export
+        run: git diff --exit-code -- xanoscript/ xano/xano.lock
